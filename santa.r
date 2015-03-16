@@ -4,7 +4,7 @@ library(ggplot2)
 #cores <- 8
 #registerDoSNOW(makeCluster(cores, type = "SOCK"))
 
-setwd("~/Documentos/projets/kaggle/santa_tsp")
+setwd("~/Documentos/projets/kaggle/Kaggle-Santa-TSP")
 
 cities <- read.csv("santa_cities.csv")
 
