@@ -1,4 +1,3 @@
-setwd("~/Documentos/projets/kaggle/santa_tsp")
 source("santa.r")
 set.seed(proc.time()[3])
 
@@ -151,6 +150,7 @@ clusterize <- function(init_sol, alg, control, pop, clu_method="linear", sol_pat
     #save data
     result$sol = sol
     result$eval = fn(sol)
+    cat(sol_path)
     if( !is.na(sol_path) ) {  
       save(result, file=paste(sol_path, "santa_", ceiling(result$eval),  ".RData", sep=""))
     }

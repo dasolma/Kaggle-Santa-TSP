@@ -1,12 +1,11 @@
-
-setwd("~/Documentos/projets/kaggle/santa_tsp")
+setwd("~/Documentos/projets/kaggle/Kaggle-Santa-TSP")
 source("hill.r")
 source("santa.r")
 
 
 santa_hill <- function(init_type="greddy", move=neighbor, move_control=dist_exp, control, sol=NA) {
 
-  sol = init(init_type, sol)
+  if( is.na(sol) ) sol = init(init_type, sol)
   D=length(sol)
   C=control # maximum of 10 iterations
   result <- hclimbing(sol,subfitness,change=move,distance=move_control,lower=rep(0,D),upper=rep(D,D), control=C, type="min")
@@ -17,7 +16,7 @@ santa_hill <- function(init_type="greddy", move=neighbor, move_control=dist_exp,
   result$init = init_type
   
   if( control$SAVE )
-    save(result, file=paste("hill/santa_", ceiling(result$eval),  "_hill.RData", sep=""))
+    save(result, file=paste("results/hill/santa_", ceiling(result$eval),  "_hill.RData", sep=""))
 
   result
 }

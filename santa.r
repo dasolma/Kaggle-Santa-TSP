@@ -14,14 +14,14 @@ randomsol <- function(par=NA) {
   else { sample(par, length(par)) }
 }
 
-greddysol <- function(s = NA, attach_left = FALSE) {
+greddysol <- function(s = NA, attach_left = FALSE, D=length(s)) {
   if( is.na(s) ) { s <- 1:nrow(cities) }
   #s <- 1:10
-  D <- length(s)
+
   ini = 2
   for(i in ini:D) {
-    x1 = cities$x[s[i:D]]
-    y1 = cities$y[s[i:D]]
+    x1 = cities$x[s[i:length(s)]]
+    y1 = cities$y[s[i:length(s)]]
     d  = sqrt((x1 - cities$x[s[i-1]])^2 + (y1 - cities$y[s[i-1]])^2)
     
     j <- which.min(d) + i - 1
@@ -71,10 +71,6 @@ greddysolsec <- function(s = NA, attach_left = FALSE) {
   
   s
 }
-
-
-
-
 
 greddysolprop <- function(s = NA, attach_left = FALSE) {
   if( is.na(s) ) { s <- 1:nrow(cities) }
@@ -202,41 +198,6 @@ max_subtour <- function(sol, n) {
   
   sol
   
-}
-
-
-pfitness <- function(sol) {
-  subfitness <- function(sol, cities) {
-    x1 <- cities$x[sol[1:length(sol)-1]]
-    y1 <- cities$y[sol[1:length(sol)-1]]
-    x2 <- cities$x[sol[2:length(sol)]]
-    y2 <- cities$y[sol[2:length(sol)]]
-    sum(sqrt((x1 - x2)^2 + (y1 - y2)^2))
-  }
-  
-  p1 <- sol[1:(nrow(cities)/2)]
-  p2 <- sol[(nrow(cities)/2)+1:nrow(cities)]
-  c <- cities
-  
-  n <- ceiling(length(p1) /  cores)
-  r <- split(p1, ceiling(seq_along(p1)/n))
-  
-  f1 <- foreach(i = 1:cores, .combine="sum") %dopar% subfitness(r[[i]], c)
-  
-  r <- split(p2, ceiling(seq_along(p2)/n))
-  f2 <- foreach(i = 1:cores, .combine="sum") %dopar% subfitness(r[[i]], c)
-  
-  return(max(f1,f2))
-}
-
-sfitness <- function(sol) {
-  p1 <- sol[1:(nrow(cities)/2)]
-  p2 <- sol[(nrow(cities)/2)+1:nrow(cities)]
-  
-  f1 <- subfitness(p1)
-  f2 <- subfitness(p2)
-  
-  return(max(f1,f2))
 }
 
 getInterDistances <- function(sol, i) {
@@ -560,15 +521,19 @@ init <- function(type, sol= NA) {
 
 show_sol <- function(sol, highlight = NA, colour="black", comparative_sol=NA) {
   p <- ggplot(cities[sol,], aes(x=x, y=y)) 
+  if( !is.na(comparative_sol)) {
+    p <- p + geom_path(data=cities[comparative_sol,], colour="red")
+  }
+  
   p <- p + geom_point(size = 1, colour=colour)  + geom_path(colour=colour) 
   if( !is.list(highlight)) {
     p <- p + geom_point(data=cities[highlight,], colour="green")
   }
   
-  if( !is.na(comparative_sol)) {
-    p <- p + geom_path(data=cities[comparative_sol,], colour="red")
-  }
-  
+ 
+  p <- p +  theme(axis.ticks = element_blank(), axis.text.y = element_blank())
+  p <- p +  theme(axis.ticks = element_blank(), axis.text.x = element_blank())
+  p <- p +  scale_y_continuous(name="") + scale_x_continuous(name="")  
   #a = angles(sol)
   #p <- p +  geom_point(data=cities[sol[which(a < 0.9)],], colour="red")
   p
@@ -768,7 +733,7 @@ angle_opt = function(sol, distance, lower, upper) {
   p2 = which(d>0 & d<mind*4)
   
   
-  c1 = sol[n]
+  c1 = sol[n-1]
   c2 = sol[sample(p2,1)]
   s2 = sol[sol!=c1]
   j = which(sol==c2)
@@ -838,5 +803,51 @@ inter_opt <- function(sol, distance, lower, upper) {
       if(int == TRUE) {cat("OK:", i, ",", n, "\n")}
     }
     
+  }
+}
+
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
   }
 }

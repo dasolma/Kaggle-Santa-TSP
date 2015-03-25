@@ -23,8 +23,8 @@ tabu <- function(par,fn,change,distance=function(x) 1,lower,upper,control, type=
   lit = c()
   
   while( i < maxit ) {
-    interBest = NA
-    finterBest = NA
+    interBest = best
+    finterBest = fbest
     for(j in 1:N) {
       
       par1 = change(best, distance)
@@ -35,6 +35,9 @@ tabu <- function(par,fn,change,distance=function(x) 1,lower,upper,control, type=
         inc = par1$inc
         par1 = par1$sol
         fpar1 = fbest + inc
+      }
+      else {
+        fpar1 = fn(par1)
       }
       
       if( !(hsol %in% tabuList) && (is.na(finterBest) || fpar1 < finterBest ) ) { 

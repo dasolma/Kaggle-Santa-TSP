@@ -1,10 +1,10 @@
-setwd("~/Documentos/projets/kaggle/santa_tsp")
+setwd("~/Documentos/projets/kaggle/Kaggle-Santa-TSP")
 source("sann.r")
 source("santa.r")
 
-santa_sann <- function(init_type="greddy", move=neighbor, move_control=dist_exp, control) {
+santa_sann <- function(init_type="greddy", move=neighbor, move_control=dist_exp, control, sol=NA) {
   
-  sol = init(init_type)
+  if( is.na(sol) ) sol = init(init_type)
   D=length(sol)
   C=control # maximum of 10 iterations
 

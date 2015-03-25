@@ -1,0 +1,41 @@
+
+Attaching package: ‘combinat’
+
+The following object is masked from ‘package:utils’:
+
+    combn
+
+Loading required package: iterators
+Loading required package: snow
+Loading required package: methods
+[1] "twoopt"
+sann
+Grabando...
+sann
+Grabando...
+[1] "neighbor"
+sann
+Grabando...
+sann
+Grabando...
+[1] "reduce_max_dist"
+sann
+Grabando...
+sann
+Grabando...
+[1] "reduce_max_dist2"
+sann
+Grabando...
+sann
+Grabando...
+[1] "angle_opt"
+sann
+Grabando...
+sann
+Grabando...
+[1] "near_opt"
+sann
+Grabando...
+sann
+Grabando...
+There were 50 or more warnings (use warnings() to see the first 50)

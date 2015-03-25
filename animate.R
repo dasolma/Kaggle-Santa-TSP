@@ -1,4 +1,4 @@
-setwd("~/Documentos/projets/kaggle/santa_tsp")
+setwd("~/Documentos/projets/kaggle/Kaggle-Santa-TSP")
 source("santa.r")
 library(ggplot2); 
 library(animation); 
@@ -31,7 +31,16 @@ FUN2 <- function() {
   })
 }
 
-saveHTML(FUN2(), autoplay = FALSE, loop = FALSE, verbose = FALSE, outdir = "images/animate/new",
-         ani.height = 1200, ani.width = 1200,
-         single.opts = "'controls': ['first', 'previous', 'play', 'next', 'last', 'loop', 'speed'], 'delayMin': 0")
 
+greddy_animate <- function() {
+  v = (1:((150000)/2))*2
+  lapply(v, function(i) {
+    g = show_sol(init("greddy")[1:i]) 
+    ggsave(g, file=paste('animations/greddy/img', sprintf("name_%07d", i),'.png', sep=""))
+  })
+ 
+}
+
+#saveHTML(greddy_animate(), autoplay = FALSE, loop = FALSE, verbose = FALSE, outdir = "/animations/greddy/",
+#         ani.height = 1200, ani.width = 1200,
+#         single.opts = "'controls': ['first', 'previous', 'play', 'next', 'last', 'loop', 'speed'], 'delayMin': 0")
