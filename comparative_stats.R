@@ -9,8 +9,9 @@ stats3$alg = rep("sann", length(stats3$alg))
 stats3$it = stats3$it * 10
 
 stats = rbind(stats1, stats2, stats3)
-factor = max(stats$it)/10
+factor = max(stats$it)/1000
 stats$groups = as.integer(stats$it/(factor)) * factor
+dtsta = data.table(stats)
 
 ggplot(stats[stats$it < 20000000,]) +
   geom_line(aes(x=it, y = (init_fitness-eval), colour = alg)) +
@@ -25,6 +26,15 @@ ggplot(stats[stats$alg=='tabu',], aes(move, fill=move)) + geom_bar() +
   facet_wrap(~ groups)
 
 
+resume = dtsta[, list(count=.N ) , by=list(groups, move)]
+ggplot(resume,aes(x=factor(groups),y=count,fill=move)) + 
+  geom_line(stat="identity", position="fill")
+
+ggplot(stats, aes(groups, fill = move)) +
+  stat_density(aes(y = ..count..), position = "fill", color = "black") +
+  labs(x="number of uses", y="iteration") +
+  scale
+
 parameters = read.csv("results/parameters_stat.csv")
 dtp = data.table(parameters)
 
@@ -34,10 +44,22 @@ psann = dtp[alg=='sann', list(min=min(eval), mean=mean(eval), sd=sd(eval) ) , by
 
 ptabu = dtp[alg=='tabu', list(min=min(eval), mean=mean(eval), sd=sd(eval) ) , by=list(N,L)]
 
-ggplot(ptabu, aes(x = as.factor(N), y = as.factor(L))) +
+gt = ggplot(ptabu, aes(x = as.factor(N), y = as.factor(L))) +
   geom_tile(aes(fill = mean)) +
   theme_bw() + labs(x="Search iterations", y="Tabu list length") +
   ggtitle("Tabu")
+
+parameters = read.csv("results/parameters_sann_stat.csv")
+dtp = data.table(parameters)
+
+dtmean = dtp[, list(min=min(eval), mean=mean(eval), sd=sd(eval) ) , by=alg]
+
+psann = dtp[alg=='sann', list(min=min(eval), mean=mean(eval), sd=sd(eval) ) , by=list(T,alpha)]
+
+gs = ggplot(psann, aes(x = as.factor(T), y = as.factor(alpha))) +
+  geom_tile(aes(fill = mean)) +
+  theme_bw() + labs(x="Temperature", y="alpha") +
+  ggtitle("Sann")
 
 ga = read.csv("results/ga/ga_stats.csv")
 dtga = data.table(ga)

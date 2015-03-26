@@ -11,7 +11,7 @@
 
   - Found two **disjoint** paths: *If one of your paths contains an edge from A to B, your other path must not contain an edge from A to B or from B to A (either order still counts as using that edge)*.
   
-  - The score is the larger of the two distances.
+  - The final score will be the larger of the two distances.
   
 * Strategy:
 
@@ -19,16 +19,18 @@
 
   2. Find the second solution respecting the constraints.
 
+* Lower boundary (sum of the distance of each city to the nearest): **5.405.982**
+
 ---
 # Use library vs develop it yourself
 
 * In big problems the performance is very important
 
-* The existing libraries execute the fitness function after the operator (no estimate the change)
+* The existing libraries execute the fitness function after to apply the operator (no estimate the change)
 
-* I develop local search, tabu search and simulate annealing **to estimate that change**
+* I developed local search, tabu search and simulate annealing **to estimate that change**
 
-* I develop ant colony algorithm because **I don't found any implementation** in R
+* I developed ant colony algorithm because **I don't found any implementation** in R
 
 ---
 # Random solution
@@ -86,11 +88,6 @@
 
 ![Angle and near operator](images/angle_near_opt.png)
 
-* reduce_max_dist
- 
-* reduce_max_dist2
-
-
 ---
 # Operators
 
@@ -109,19 +106,29 @@
 ---
 # Divide and select a good operator
 
+* Deal with the complete problem is unfeasible (locality, fitness calculate, ...) 
 
-1. For each subroute of the current solution
+* I don't know when is better use each operator
 
-   1.1. Select an operator (the best score have more probability of be select)
+* So, I use the follow strategy:
 
-   1.2. Apply a algorithm a number of interations
+```javascript
+	1. For each subroute of size m of the current solution
 
-   1.3. If there is improvement increase the score of the operator, in other case decrease it
+	   1.1. Select an operator (the best score have more probability to be selected)
+
+	   1.2. Apply an algorithm a number of interations
+
+	   1.3. If there is improvement increase the score of the operator, in other case decrease it
+
+	2. If had improvement in any subroute return to 1
+
+```
 
 ---
 # Parameters
 
-
+![Sann and tabu parameters research](images/metaparameters.png)
 
 ---
 # Comparing the final results
@@ -138,6 +145,11 @@
 * The algorithms select the operators that get improvings
 
 ---
+# Using operators 
+
+![Graph of the operators using](images/operators_count.png)
+
+---
 # Population algorithms
 
 * In general need more memory and the fitness estimation of the operations are difficult
@@ -145,7 +157,7 @@
 ![Parameters ga](images/ga_parameters.png)
 
 ---
-# Second solution
+# Finding a the second solution
 
 * Create a second solution from the first:
 
@@ -153,7 +165,7 @@
 
 * New fitness function using naive:
 ```
-		nF(s) = F(s) + ( F(s)/D ) * 3e
+		G(s) = F(s) + ( F(s)/D ) * 3e
 ```
 * where:
 
@@ -161,7 +173,7 @@
   - e: edges coinciding 
 
 ---
-# Second solution
+#  Finding a the second solution
 
 ![Second heuristic solution](images/heuristic_second.png)
 

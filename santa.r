@@ -851,3 +851,10 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
     }
   }
 }
+
+minimun_sol <- function() {
+  sapply(1:150000, function(x) { 
+    d = getdistancesto(1:150000, x)  
+    min(d[d!=0])
+    }) 
+}
